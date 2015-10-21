@@ -7,6 +7,7 @@
 #include <cctype>
 #include <queue>
 #include <map>
+#include <memory>
 #include <fstream>
 #include <iomanip>
 #include <stdlib.h>
@@ -424,7 +425,7 @@ int main(int argc, char* argv[]) {
 
      string line;
      quant1=0;
-     Scheduler* scheduler;
+     unique_ptr<Scheduler> scheduler;
      if (argc < 2) {
         cout << "Invalid paramters" << endl;
         return -1;
@@ -472,7 +473,7 @@ int main(int argc, char* argv[]) {
         if (quant1>0){
             handler.setQuantum(quant1);
         }
-        scheduler = handler.getScheduler(schedType);
+        scheduler.reset(handler.getScheduler(schedType));
         //cout<<scheduler->getQuantum()<<" "<<quant1;
         while(std::getline(rFile, line))
         {
