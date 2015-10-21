@@ -303,13 +303,7 @@ class prio:public Scheduler{
                     readyQueue.push_back(p);
                 }
 
-
-              /*  cout<<"inserting "<<p.pid<<" pos"<<i<<endl;
-                for(int j=0; j<readyQueue.size();j++)
-                    cout<<readyQueue[j].pid<<" ";
-                cout<<endl;*/
-            }
-
+			}
             else{
                 i=0;
                 //p.setDP(p.getPrio()-1);
@@ -334,7 +328,6 @@ class prio:public Scheduler{
             if(readyQueue.empty())
 
             {
-              //  cout<<"switching"<<endl;
 
                 if(!expiredQueue.empty())
                 {
@@ -349,10 +342,7 @@ class prio:public Scheduler{
             if(!readyQueue.empty())
 
             {
-                //
-                //cout<<endl;
                 process p = readyQueue.front();
-                    //p.setPrio(p.getPrio()-1);
                 readyQueue.erase(readyQueue.begin());
 
                 return p;
@@ -473,7 +463,6 @@ int main(int argc, char* argv[]) {
             handler.setQuantum(quant1);
         }
         scheduler = handler.getScheduler(schedType);
-        //cout<<scheduler->getQuantum()<<" "<<quant1;
         while(std::getline(rFile, line))
         {
             const char * c = line.c_str();
@@ -492,11 +481,8 @@ int main(int argc, char* argv[]) {
             sscanf(buf, "%d%d%d%d", &a, &t, &c, &i);
             procList.push_back(process(pid,a,t,c,i,ppri));
             pid++;
-
-           //cout << pid;
         }
     }
-    //return 0;
     for (int i=0; i<procList.size();i++)
     {
         event a;
@@ -509,7 +495,6 @@ int main(int argc, char* argv[]) {
     for (int i=0; i< handler.eventList.size();i++)
     {
         event a = handler.eventList[i];
-     //   cout << a.transition << " "<<endl;
 
     }
     int timer = procList[0].getAt();
@@ -522,9 +507,7 @@ int main(int argc, char* argv[]) {
     while(handler.eventList.size()!=0){
         event cur = handler.getEvent();
 
-     //   process procList[cur_pid] = procList[cur_pid];
         int cur_pid = cur.pid;
-        //cout << cur_pid <<" *** "<< cur.transition <<endl;
         if(cur.timestamp > timer)
             timer=cur.timestamp;
 
@@ -537,11 +520,8 @@ int main(int argc, char* argv[]) {
             event newEve(procList[cur_pid].getAt(),procList[cur_pid].getAt(),cur_pid,1); //goback and check
             handler.insertEvent(newEve);
             scheduler->putProcess(procList[cur_pid]);
-
-          //  handler.schedule(procList[cur_pid],schedType);
         }
         else if(cur.transition == 1){
-            //cout << startNext<<"**"<<cur.timestamp<<endl;
             if (cur.timestamp<startNext)
             {
                 cur.timestamp = startNext;
@@ -552,17 +532,14 @@ int main(int argc, char* argv[]) {
             process p = scheduler->getProcess();
 
             cur_pid = p.pid;
-            //cout << p.getRt()<<endl;
             int cw = p.getCPUWait();
             int rt = p.getRt();
             int x = cw + timer - rt;
- //           cout<<cur_pid<<" "<<timer<<" "<<x<<" "<<rt<<endl;
             procList[cur_pid].setCPUWait(x);
             procList[cur_pid].setExp(false);
 
             if(scheduler->getType() == 3 || scheduler->getType()==4){
                 int q = scheduler->getQuantum();
-                //cout<<"Pid:"<<cur_pid<<endl;
 
                 if (procList[cur_pid].getBurst() == 0)
                 {
@@ -588,11 +565,6 @@ int main(int argc, char* argv[]) {
                         procList[cur_pid].setRem(0);
                         if(verbose)
                         cout<<timer+procList[cur_pid].rem<<" "<<cur_pid<<" "<<"DONE"<<endl;
-
-                        //event newEve(timer+procList[cur_pid].rem,timer,cur_pid,5); //goback and check
-                        //handler.insertEvent(newEve);
-                       // procList[cur_pid].setDP(procList[cur_pid].getDP()-1);
-
                     }
                     else{
                         if(verbose)
@@ -632,9 +604,6 @@ int main(int argc, char* argv[]) {
                         cout<<timer<<" "<<cur_pid<<" "<<"READY -> RUNNG "<<"cb:"<<procList[cur_pid].getRem()<<" rem:"<<procList[cur_pid].rem<<" Prio:"<<procList[cur_pid].getDP()<<endl;
 
                         procList[cur_pid].setBurst(0);
-                       //
-                        //event newEve(timer+procList[cur_pid].getRem(),timer,cur_pid,5);
-                        //handler.insertEvent(newEve);
                         procList[cur_pid].setFt(timer+procList[cur_pid].rem);
                         int tt = timer+procList[cur_pid].rem - procList[cur_pid].getAt();
                         procList[cur_pid].setTt(tt);
@@ -649,10 +618,8 @@ int main(int argc, char* argv[]) {
                 }
 
             }
-         //   cout << cur_pid <<endl;
             else{
                 randCPU =  myrandom(procList[cur_pid].getCb());
-          //  procList[cur_pid].setCb(procList[cur_pid].getCb()-randCPU);
 
                 if(procList[cur_pid].getRem()< randCPU)
                 {
@@ -680,7 +647,6 @@ int main(int argc, char* argv[]) {
                     event newEve(timer+randCPU,timer,cur_pid,3);
                     handler.insertEvent(newEve);
                     startNext = timer + randCPU;
-                  //  cout<<procList[cur_pid].getRem()<<endl;
                 }
             }
         }
@@ -696,7 +662,6 @@ int main(int argc, char* argv[]) {
                 handler.insertEvent(newEve);
                 if(verbose)
                 cout<<timer<<" "<<cur_pid<<" "<<"RUNNG -> BLOCK "<<"ib:"<<ioBurst<<" rem:"<<procList[cur_pid].rem<<" Prio:"<<procList[cur_pid].getDP()<<endl;
-            //timer = timer+ioBurst;//works for fifo
             }
             else
             {
@@ -710,35 +675,19 @@ int main(int argc, char* argv[]) {
         {
                 blockedproc--;
                 if (blockedproc == 0)
-                   //cout<<"current time:"<<timer;
                    iolapse+= timer - startio;
-                    //cout <<" Iolapse:"<< iolapse << endl;
-
-
                 if(verbose)
                 cout<<timer<<" "<<cur_pid<<" "<<"BLOCK -> READY "<<" Prio:"<<procList[cur_pid].getDP()<<endl;
                 procList[cur_pid].setRt(timer);
-                //procList[cur_pid].setDP(procList[cur_pid].getPrio()-1);
                 scheduler->putProcess(procList[cur_pid]);
                 event newEve(timer,timer,cur_pid,1);
                 handler.insertEvent(newEve);
-
-        }
-        else if(cur.transition == 5)
-
-        {
-             procList[cur_pid].setFt(timer);
-             int tt = timer - procList[cur_pid].getAt();
-             procList[cur_pid].setTt(tt);
-             if(verbose)
-             cout<<timer<<" "<<cur_pid<<" "<<"DONE"<<endl;
 
         }
         else if(cur.transition == 6)
         {
             if (verbose)
             cout<<timer<<" "<<cur_pid<<" "<<"RUNNG -> READY "<<" Prio:"<<procList[cur_pid].getDP()<<endl;
-       //     procList[cur_pid].setDP(procList[cur_pid].getDP()-1);
             procList[cur_pid].setRt(timer);
 
             if(procList[cur_pid].getDP()<0)
@@ -757,8 +706,6 @@ int main(int argc, char* argv[]) {
             handler.insertEvent(newEve);
 
         }
-        //timelapse = timer - timelapse;
-        //cout<<"current time:"<<timer<<" time lapsed:"<<timelapse<<" No of blocked procs:"<<blockedproc<<endl;
     }
     int lastfinished = 0;
     double cpuUtil = 0;
@@ -796,6 +743,6 @@ int main(int argc, char* argv[]) {
     cout<<"SUM: "<< setw (3)<<lastfinished<<" " <<fixed<<setprecision(2)<< cpuUtil<< " "<<setprecision(2)<< ioUtil<< " "<<setprecision(2)<< avgTurn<<" "<<setprecision(2)<<avgCW<<" "<<setprecision(3)<<avgP<<endl;
 
 
-
+    delete(scheduler);
     return 0;
 }
